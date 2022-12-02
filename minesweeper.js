@@ -1,6 +1,3 @@
-var element = document.createElement('outline');
-element.style.width = "100px";
-
 document.addEventListener('DOMContentLoaded', () => {
   const grid = document.querySelector('.grid')
   const flagsLeft = document.querySelector('#flags-left')
