@@ -3,8 +3,7 @@
     width: 950px;
     display: flex;
     flex-wrap: wrap;
-   
-    
+    background-color: aliceblue;
 }
 
 .grid div{
