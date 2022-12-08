@@ -1,84 +1,103 @@
-
-
-// ****LAUNCHPAD CODE *****
+// *** LAUNCHPAD CODE ***
 console.log(navigator);
-    let device; 
+let device;
 
-
-if (navigator.requestMIDIAccess){
-    navigator.requestMIDIAccess().then(success, failure)
+// This block of functions are manage connecting the web-midi-api to your launchpad
+// they also parse the incoming and outgoing signals into meaningful numbers
+if (navigator.requestMIDIAccess) {
+  navigator.requestMIDIAccess().then(success, failure);
 }
-function failure(){
-    console.log('could not connect MIDI');
-}
-function updateDevices(event){
-    console.log(event);
+function failure() {
+  console.log("Could not connect MIDI");
 }
 
-
-
-function success(midiAccess){
-    console.log(midiAccess);
-    midiAccess.addEventListener('statechange',updateDevices);
-    let inputs =  midiAccess.inputs;
-
-for (let output of midiAccess.outputs.values()){
-   device = output;
-   console.log('output device');
+function updateDevices(event) {
+  console.log(event);
 }
 
-    inputs.forEach((input) => {
-        console.log(input)
-    input.addEventListener('midimessage', handleInput);
-    });
-}
+function success(midiAccess) {
+//   console.log(midiAccess);
+  midiAccess.addEventListener('statechange', updateDevices);
+  let inputs = midiAccess.inputs;
+//   console.log(inputs);
 
-function handleInput(input){
-   
-    let command = input.data[0];
-    let note = input.data[1];
-    let velcocity = input.data[2];
-    console.log(`command: ${command}, note: ${note}, velcoity: ${velcocity}`);
-
-    if (velcocity > 0){
-        noteOn(note);
+    for (let output of midiAccess.outputs.values()) {
+        device = output;
+        // console.log('Output device selected', device);
     }
-    if (velcocity == 0){
-        noteOff(note);
-    }
+
+  inputs.forEach((input) => {
+    //   console.log(input);
+      input.addEventListener('midimessage', handleInput);
+  });
+}
+
+function handleInput(input) {
+  // console.log(input);
+
+  let command   = input.data[0];
+  let note      = input.data[1];
+  let velocity  = input.data[2];
+
+  // console.log(`command: ${command}, note: ${note}, velocity: ${velocity}`);
+
+
+  if (velocity > 0) {
+    noteOn(note);
+  }
+
+  if (velocity == 0){
+    noteOff(note);
+  }
 }
 
 
+// The proceding functions are where you will impliment your own 
+// custom javascript functions on the notes of the launchpad
+function noteOn(note) {
+  console.log(`note:${note} // on`);
 
-function noteOn(note){
-    console.log(`note:${note} // on`);
-    if (note == 99){
-        console.log("note on function ran")
-        document.getElementById('Hello_tag').textContent = "goodbye!"
-        colorM(note,99,10);
-        colorM(note,98,20);
-        colorM(note,97,30);
-        colorM(note,96,40);
-        colorM(note,96,50);
-        colorM(note,94,60);
-        colorM(note,93,70);
-    }
+  if ( note == 99){
+    document.getElementById('hello_tag').textContent = "GoodBye!"
+    colorM(note,104);
+    colorM(note+1,104);
+    colorM(note+2,104);
+
+  }
+
+  if ( note == 64){
+    document.getElementById('hello_tag').textContent = "64!"
+    colorM(note,124);
+    colorM(note+1,124);
+    colorM(note+2,124);
+
+  }
 }
+
 function noteOff(note){
     console.log(`note:${note} // off`);
-    if (note == 99){
-        document.getElementById('Hello_tag').textContent = "Hello World!"
-        colorM(note,99,0);
-        colorM(note,98,0);
-        colorM(note,97,0);
-        colorM(note,96,0);
-        colorM(note,96,0);
-        colorM(note,94,0);
-        colorM(note,93,0);
-    }
+    
+
+    if ( note == 99){
+        document.getElementById('hello_tag').textContent = "Hello World!"
+        colorM(note,0);
+        colorM(note+1,0);
+        colorM(note+2,0);
+      }
+
+    if ( note == 64){
+        document.getElementById('hello_tag').textContent = "Hello World!"
+        colorM(note,0);
+        colorM(note+1,0);
+        colorM(note+2,0);
+      }
+
 }
 
-
+// This function is used to change the color of the midi's LED's. 
+// It is implemented in the noteOn and noteOff functions above
 function colorM(key,clr){
-    device && device.send([0x90,key,clr]);// note on
+  // The color key can be found on page 11 @ https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwiEjtrOurb7AhXMlokEHcjqB_0QFnoECA8QAQ&url=https%3A%2F%2Fwww.djshop.gr%2FAttachment%2FDownloadFile%3FdownloadId%3D10737&usg=AOvVaw02Njpg1AY5jOV7Z6gjcw5W
+    device && device.send([0x90,key,clr]); 
 }
+
